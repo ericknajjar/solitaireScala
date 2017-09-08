@@ -1,6 +1,8 @@
-import java.nio.file.{Files, StandardCopyOption, Paths}
+import java.nio.file.{Files, Paths, StandardCopyOption}
 
 import sbt._
+import org.apache.commons.io
+import org.apache.commons.io.FileUtils
 
 enablePlugins(ScalaJSPlugin)
 enablePlugins(ScalaJSBundlerPlugin)
@@ -18,7 +20,8 @@ resolvers += Resolver.jcenterRepo
 
 libraryDependencies += "com.definitelyscala" %%% "scala-js-phaser" % "1.0.2"
 
-webpackConfigFile := Some(baseDirectory.value / "webpack.config.js")
+webpackConfigFile in fullOptJS := Some(baseDirectory.value / "webpack.release.config.js")
+webpackConfigFile in fastOptJS := Some(baseDirectory.value / "webpack.dev.config.js")
 
 npmDevDependencies in Compile += "webpack-merge" -> "4.1.0"
 
@@ -31,6 +34,8 @@ npmDependencies in Compile += "phaser" -> "2.6.2"
 npmDependencies in Compile += "imports-loader" -> "*"
 
 lazy val release = taskKey[Unit]("Build a release version of the game")
+lazy val devBuild = taskKey[Unit]("Builds a dev version of the game")
+
 lazy val testes = taskKey[Unit]("An example task")
 lazy val cleanTarget = taskKey[Unit]("Clean Target Directory")
 
@@ -39,7 +44,28 @@ cleanTarget := {
   var targetDir =  baseDirectory.value / "target" / "scala-2.12" /"scalajs-bundler" / "main"
 
   val files = targetDir.listFiles()
-  files.filter (_.name.endsWith(".js")).map(_.delete)
+  files.filter ((f)=> f.name.endsWith(".js")
+    || f.name.endsWith(".gz")
+    || f.name.endsWith(".map")).map(_.delete)
+
+}
+
+devBuild := {
+
+  val t = webpack.in(fastOptJS).in(Compile).value
+  val toCopy = baseDirectory.value / "target" / "scala-2.12" /"scalajs-bundler" / "dev"
+  val html = baseDirectory.value / "src" / "main" / "web"
+
+  FileUtils.cleanDirectory(toCopy)
+  FileUtils.copyDirectory(html,toCopy)
+  FileUtils.forceDelete(toCopy / "index.html")
+  FileUtils.moveFile( toCopy / "indexDev.html",toCopy / "index.html")
+
+  t.map ((file)=>{
+    Files.copy(file.toPath,(toCopy / file.name).toPath,StandardCopyOption.REPLACE_EXISTING)
+    val map = new File(file.toPath + ".map")
+    Files.copy(map.toPath,(toCopy / (map.name)).toPath,StandardCopyOption.REPLACE_EXISTING)
+  })
 }
 
 release := {
@@ -48,12 +74,12 @@ release := {
 
    val t = webpack.in(fullOptJS).in(Compile).value
    val toCopy = baseDirectory.value / "target" / "scala-2.12" /"scalajs-bundler" / "release"
-   val html = baseDirectory.value / "src" / "main" / "web" / "index.html"
+   val html = baseDirectory.value / "src" / "main" / "web"
 
   if (!toCopy.exists())
     toCopy.mkdirs()
 
-   Files.copy(html.toPath,(toCopy /html.name).toPath,  StandardCopyOption.REPLACE_EXISTING)
+    FileUtils.copyDirectory(html,toCopy)
 
     t.map ((file)=>{
 

@@ -1,6 +1,5 @@
 var merge = require("webpack-merge");
 var webpack = require('webpack');
-var optConfig = require("./opt.webpack.config.js");
 var path = require('path');
 
 var phaserModule = path.join(__dirname, '/node_modules/phaser/');
@@ -16,7 +15,6 @@ Object.keys(config.entry).forEach(function(key) {
   // Prepend each entry with the globally exposed JS dependencies
   config.entry[key] = phaserNames.concat(config.entry[key]);
 });
-
 
 
 var phaserConfig = {
@@ -38,5 +36,5 @@ var phaserConfig = {
 };
 
 
-module.exports = merge.smart(config,phaserConfig,optConfig);
+module.exports = merge.smart(config,phaserConfig);
 

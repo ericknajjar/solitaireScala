@@ -5,9 +5,7 @@ import com.definitelyscala.phaser._
 object Main  {
 
   def main(args: Array[String]): Unit = {
-    println("Hello world! ")
-    val game = new Game(width = 800, height = 520,renderer = Phaser.CANVAS, parent = "solitair-container")
-    println(game.height)
+    val game = new Game(width = 800, height = 520,renderer = Phaser.CANVAS, parent = "solitair-container",state = new TableState())
   }
 
 }
