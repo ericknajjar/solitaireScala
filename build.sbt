@@ -1,7 +1,6 @@
-import java.nio.file.{Files, Paths, StandardCopyOption}
+import java.nio.file.{Files, StandardCopyOption}
 
 import sbt._
-import org.apache.commons.io
 import org.apache.commons.io.FileUtils
 
 enablePlugins(ScalaJSPlugin)
@@ -20,10 +19,11 @@ resolvers += Resolver.jcenterRepo
 
 libraryDependencies += "com.definitelyscala" %%% "scala-js-phaser" % "1.0.2"
 libraryDependencies += "io.monix" %%% "monix" % "2.3.0"
+libraryDependencies += "org.scalatest" %%% "scalatest" % "3.0.1" % "test"
+//libraryDependencies += "org.scalactic" %%% "scalactic" % "3.0.4" % "test"
 
 webpackConfigFile in fullOptJS := Some(baseDirectory.value / "webpack.release.config.js")
 webpackConfigFile in fastOptJS := Some(baseDirectory.value / "webpack.dev.config.js")
-
 npmDevDependencies in Compile += "webpack-merge" -> "4.1.0"
 
 npmDevDependencies in Compile += "compression-webpack-plugin" -> "*"
