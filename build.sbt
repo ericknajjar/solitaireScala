@@ -11,7 +11,7 @@ name := "solitairScala"
 
 version := "1.0"
 
-scalaVersion := "2.12.1"
+scalaVersion := "2.12.3"
 
 scalaJSUseMainModuleInitializer := true
 
@@ -19,6 +19,7 @@ useYarn := true
 resolvers += Resolver.jcenterRepo
 
 libraryDependencies += "com.definitelyscala" %%% "scala-js-phaser" % "1.0.2"
+libraryDependencies += "io.monix" %%% "monix" % "2.3.0"
 
 webpackConfigFile in fullOptJS := Some(baseDirectory.value / "webpack.release.config.js")
 webpackConfigFile in fastOptJS := Some(baseDirectory.value / "webpack.dev.config.js")
@@ -30,6 +31,7 @@ npmDevDependencies in Compile += "webpack-closure-compiler" -> "*"
 npmDevDependencies in Compile += "expose-loader" -> "0.7.1"
 npmDevDependencies in Compile += "script-loader" -> "*"
 
+
 npmDependencies in Compile += "phaser" -> "2.6.2"
 npmDependencies in Compile += "imports-loader" -> "*"
 
@@ -38,6 +40,9 @@ lazy val devBuild = taskKey[Unit]("Builds a dev version of the game")
 
 lazy val testes = taskKey[Unit]("An example task")
 lazy val cleanTarget = taskKey[Unit]("Clean Target Directory")
+
+emitSourceMaps in fastOptJS := false
+enableReloadWorkflow in fastOptJS := true
 
 cleanTarget := {
 
@@ -56,7 +61,9 @@ devBuild := {
   val toCopy = baseDirectory.value / "target" / "scala-2.12" /"scalajs-bundler" / "dev"
   val html = baseDirectory.value / "src" / "main" / "web"
 
-  FileUtils.cleanDirectory(toCopy)
+  if(toCopy.exists)
+    FileUtils.cleanDirectory(toCopy)
+
   FileUtils.copyDirectory(html,toCopy)
   FileUtils.forceDelete(toCopy / "index.html")
   FileUtils.moveFile( toCopy / "indexDev.html",toCopy / "index.html")
@@ -64,7 +71,8 @@ devBuild := {
   t.map ((file)=>{
     Files.copy(file.toPath,(toCopy / file.name).toPath,StandardCopyOption.REPLACE_EXISTING)
     val map = new File(file.toPath + ".map")
-    Files.copy(map.toPath,(toCopy / (map.name)).toPath,StandardCopyOption.REPLACE_EXISTING)
+    if(map.exists)
+      FileUtils.copyFile(map,toCopy)
   })
 }
 
@@ -76,10 +84,11 @@ release := {
    val toCopy = baseDirectory.value / "target" / "scala-2.12" /"scalajs-bundler" / "release"
    val html = baseDirectory.value / "src" / "main" / "web"
 
-  if (!toCopy.exists())
-    toCopy.mkdirs()
+  if(toCopy.exists)
+    FileUtils.cleanDirectory(toCopy)
 
-    FileUtils.copyDirectory(html,toCopy)
+  FileUtils.copyDirectory(html,toCopy)
+  FileUtils.forceDelete(toCopy / "indexDev.html")
 
     t.map ((file)=>{
 
@@ -89,8 +98,12 @@ release := {
       val gz = new File(file.toPath + ".gz")
       val map = new File(file.toPath + ".map")
 
-      Files.copy(gz.toPath,(toCopy / (gz.name)).toPath,StandardCopyOption.REPLACE_EXISTING)
-      Files.copy(map.toPath,(toCopy / (map.name)).toPath,StandardCopyOption.REPLACE_EXISTING)
+      if(gz.exists)
+        FileUtils.copyFile(gz,toCopy)
+
+      if(map.exists)
+        FileUtils.copyFile(map,toCopy)
+
     })
 
 }

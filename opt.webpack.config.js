@@ -15,6 +15,6 @@ var uglyfy = new webpack.optimize.UglifyJsPlugin();
 var clojure = new ClosureCompilerPlugin();
 module.exports = {
 
-    plugins: [gzipCompression]
+    plugins: [gzipCompression,uglyfy]
 
 }

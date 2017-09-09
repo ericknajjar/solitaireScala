@@ -9,11 +9,11 @@ var p2 = path.join(phaserModule, 'build/custom/p2.min.js');
 
 var config = require('./scalajs.webpack.config');
 
-var phaserNames = ["pixi.js","p2","phaser"];
+var globalModules  = ["pixi.js","p2","phaser"];
 
 Object.keys(config.entry).forEach(function(key) {
-  // Prepend each entry with the globally exposed JS dependencies
-  config.entry[key] = phaserNames.concat(config.entry[key]);
+
+  config.entry[key] = globalModules.concat(config.entry[key]);
 });
 
 
@@ -23,7 +23,7 @@ var phaserConfig = {
            loaders: [
                 { test: /pixi.min.js/, loader: "expose-loader?PIXI" },
                 { test: /phaser-split.min.js/, loader: 'expose-loader?Phaser'},
-                { test: /p2.min.js/, loader: "expose-loader?p2"}
+                { test: /p2.min.js/, loader: "expose-loader?p2"},
             ]
         },
         resolve: {
@@ -32,7 +32,7 @@ var phaserConfig = {
                 'pixi.js': pixi,
                 'p2': p2,
             }
-        }
+        },
 };
 
 
