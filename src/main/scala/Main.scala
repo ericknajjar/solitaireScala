@@ -1,4 +1,5 @@
 import com.definitelyscala.phaser._
+import solitaire.viewContext.TableState
 
 /**
   * Created by erick on 23/08/17.

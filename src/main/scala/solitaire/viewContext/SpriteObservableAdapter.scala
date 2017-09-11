@@ -1,10 +1,10 @@
+package solitaire.viewContext
+
 
 import com.definitelyscala.phaser.Sprite
 import monix.execution.Cancelable
 import monix.reactive
-import monix.reactive.{Observable, OverflowStrategy}
-
-import scala.scalajs.js
+import monix.reactive.Observable
 
 /**
   * Created by erick on 08/09/17.

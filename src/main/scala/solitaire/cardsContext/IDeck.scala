@@ -1,4 +1,4 @@
-package solitaire
+package solitaire.cardsContext
 
 trait IDeck
 {

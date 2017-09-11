@@ -1,4 +1,4 @@
-package solitaire
+package solitaire.cardsContext
 
 case class Card(val value:CardValue.Value, val suite:CardSuite.Value)
 {

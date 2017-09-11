@@ -2,6 +2,7 @@ package solitaire.tests
 
 import solitaire._
 import org.scalatest._
+import solitaire.cardsContext.{Card, Deck}
 
 
 
@@ -58,7 +59,7 @@ class DeckTests extends FlatSpec with Matchers {
 
   }
 
-  it should "should call the shuffler on creations" in {
+  it should "should call the shuffler on creation" in {
 
     var called = false
     var deck = Deck((cards)=>{

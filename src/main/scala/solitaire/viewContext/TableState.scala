@@ -1,9 +1,14 @@
+package solitaire.viewContext
+
 import com.definitelyscala.phaser.{PhysicsObj, State}
-import monix.reactive.{Observable, OverflowStrategy}
-import monix.execution.Scheduler.Implicits.global
+import com.definitelyscala.phaserpixi.Point
+import solitaire.cardsContext.Deck
 
 import scala.scalajs.js.annotation.ScalaJSDefined
-import com.definitelyscala.phaserpixi.Point
+import solitaire.viewContext.CardsViewExtensions._
+
+import scala.util.Random
+
 /**
   * Created by erick on 08/09/17.
   */
@@ -33,15 +38,20 @@ class TableState() extends State{
     val spritesheet = game.cache.getFrameByIndex("cards",0)
 
     val x = dealPyramid(new Point(spritesheet.width*0.75f,spritesheet.width*0.75f))
+    var deck = Deck(Random.shuffle(_))
 
     x.foreach( p =>{
 
-      val card = new SpriteObservableAdapter(game.add.sprite(p.x,p.y,"cards",0))
+      val card = deck.Top
+      println(card)
+      deck = deck.Draw
 
-      card.sprite.inputEnabled = true
-      card.sprite.input.enableDrag()
-      card.sprite.scale.x = 0.75f
-      card.sprite.scale.y = 0.75f
+      val spriteCard = new SpriteObservableAdapter(game.add.sprite(p.x,p.y,"cards",card.spriteIndex))
+
+      spriteCard.sprite.inputEnabled = true
+      spriteCard.sprite.input.enableDrag()
+      spriteCard.sprite.scale.x = 0.75f
+      spriteCard.sprite.scale.y = 0.75f
 
     })
 

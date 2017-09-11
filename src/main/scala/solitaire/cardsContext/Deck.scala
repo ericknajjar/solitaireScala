@@ -1,4 +1,4 @@
-package solitaire
+package solitaire.cardsContext
 
 class Deck private (allCards:Seq[Card]) extends IDeck
 {
