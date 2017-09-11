@@ -20,12 +20,11 @@ object CardsViewExtensions {
    mappings.toMap
   }
 
-  class ViewCard(val card:Card) {
-    val spriteIndex = {
+  implicit class ViewCard(val card:Card) extends AnyVal{
+    def spriteIndex = {
       cardToIndexMap(card)
     }
   }
 
-  implicit def CardToViewCard(card:Card) = new ViewCard(card)
 
 }

@@ -9,8 +9,6 @@ import solitaire.cardsContext.{Card, Deck}
 
 class DeckTests extends FlatSpec with Matchers {
 
-  val r = new scala.util.Random
-
   "A deck" should "have 52 cards" in {
 
     var deck = Deck(shuffler)
