@@ -2,12 +2,14 @@ package solitaire.viewContext
 
 import com.definitelyscala.phaser.{PhysicsObj, State}
 import com.definitelyscala.phaserpixi.Point
-import solitaire.cardsContext.Deck
+import monix.execution.{Cancelable, CancelableFuture}
+import solitaire.cardsContext.{Card, Deck}
 
 import scala.scalajs.js.annotation.ScalaJSDefined
 import solitaire.viewContext.CardsViewExtensions._
 
 import scala.util.Random
+import monix.execution.Scheduler.Implicits.global
 
 /**
   * Created by erick on 08/09/17.
@@ -27,7 +29,6 @@ class TableState() extends State{
 
   override def create(): Unit = {
 
-   // game.stage.backgroundColor = "rgb(68, 136, 170)";
     game.physics.startSystem(PhysicsObj.ARCADE)
 
     val background = game.add.tileSprite(0, 0, 256, 256, "background")
@@ -38,24 +39,31 @@ class TableState() extends State{
     val spritesheet = game.cache.getFrameByIndex("cards",0)
 
     val x = dealPyramid(new Point(spritesheet.width*0.75f,spritesheet.width*0.75f))
-    var deck = Deck(Random.shuffle(_))
+    var deck = Deck((cards)=>Random.shuffle(cards))
 
-    x.foreach( p =>{
+    x.map( p =>{
 
       val card = deck.Top
-      println(card)
+
       deck = deck.Draw
 
       val spriteCard = new SpriteObservableAdapter(game.add.sprite(p.x,p.y,"cards",card.spriteIndex))
+
 
       spriteCard.sprite.inputEnabled = true
       spriteCard.sprite.input.enableDrag()
       spriteCard.sprite.scale.x = 0.75f
       spriteCard.sprite.scale.y = 0.75f
 
+      spriteCard.onDragStop.foreach((s)=>{
+
+        s.position.x = p.x
+        s.position.y = p.y
+
+      })
+
     })
 
-    //card.onInputDown.map(println(_)).subscribe()
 
 
   }

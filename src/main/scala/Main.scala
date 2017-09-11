@@ -9,7 +9,7 @@ object Main  {
 
   def main(args: Array[String]): Unit = {
 
-    val game = new Game(width = 800, height = 520,renderer = Phaser.CANVAS, parent = "solitair-container",state = new TableState())
+    val game = new Game(width = 800, height = 520,renderer = Phaser.CANVAS, parent = "solitaire-container",state = new TableState())
 
   }
 

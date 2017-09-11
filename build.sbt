@@ -6,7 +6,7 @@ import org.apache.commons.io.FileUtils
 enablePlugins(ScalaJSPlugin)
 enablePlugins(ScalaJSBundlerPlugin)
 
-name := "solitairScala"
+name := "solitaireScala"
 
 version := "1.0"
 

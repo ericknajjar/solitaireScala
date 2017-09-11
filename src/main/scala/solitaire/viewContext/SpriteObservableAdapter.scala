@@ -12,14 +12,25 @@ import monix.reactive.Observable
 class SpriteObservableAdapter(val sprite:Sprite){
 
 
-  val onInputDown = Observable.create[Int](new reactive.OverflowStrategy.ClearBuffer(2)) { downstream =>
+  val onInputDown = Observable.create[Sprite](new reactive.OverflowStrategy.ClearBuffer(2)) { downstream =>
 
     sprite.events.onInputDown.add(()=>{
-      downstream.onNext(1)
+      downstream.onNext(sprite)
     },null,0)
 
     Cancelable.empty
   }
+
+  val onDragStop = Observable.create[Sprite](new reactive.OverflowStrategy.ClearBuffer(2)) { downstream =>
+
+    sprite.events.onDragStop.add(()=>{
+      downstream.onNext(sprite)
+    },null,0)
+
+    Cancelable.empty
+  }
+
+
 
 
 

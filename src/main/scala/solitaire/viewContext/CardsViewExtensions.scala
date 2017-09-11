@@ -9,7 +9,7 @@ object CardsViewExtensions {
 
     val mappings = Card.AllCards.map((card)=>{
 
-      val suite = CardSuite.values.toSeq.indexOf(card.suite)*12
+      val suite = CardSuite.values.toSeq.indexOf(card.suite)*13
       val value = CardValue.values.toSeq.indexOf(card.value)
 
       (card,suite+value)
