@@ -3,15 +3,13 @@ import monix.reactive.{Observable, OverflowStrategy}
 import monix.execution.Scheduler.Implicits.global
 
 import scala.scalajs.js.annotation.ScalaJSDefined
-
+import com.definitelyscala.phaserpixi.Point
 /**
   * Created by erick on 08/09/17.
   */
 
 @ScalaJSDefined
 class TableState() extends State{
-
-  var card:SpriteObservableAdapter = null
 
 
   override def preload(): Unit = {
@@ -32,13 +30,44 @@ class TableState() extends State{
     background.width = game.width
     background.height = game.height
 
-    card = new SpriteObservableAdapter(game.add.sprite(25,25,"cards",0))
+    val spritesheet = game.cache.getFrameByIndex("cards",0)
 
-    card.sprite.inputEnabled = true
-    card.sprite.input.enableDrag()
+    val x = dealPyramid(new Point(spritesheet.width*0.75f,spritesheet.width*0.75f))
 
-    card.onInputDown.map(println(_)).subscribe()
+    x.foreach( p =>{
 
+      val card = new SpriteObservableAdapter(game.add.sprite(p.x,p.y,"cards",0))
+
+      card.sprite.inputEnabled = true
+      card.sprite.input.enableDrag()
+      card.sprite.scale.x = 0.75f
+      card.sprite.scale.y = 0.75f
+
+    })
+
+    //card.onInputDown.map(println(_)).subscribe()
+
+
+  }
+
+  def dealPyramid(cardDimmensions:Point) = {
+
+    val maxLineSize = 7
+
+    val basePos = new Point(cardDimmensions.x*2,game.height - cardDimmensions.y*3 )
+    val xGap = cardDimmensions.x/5.0f
+
+    val ret = for(i <- 0 to 6;j <- 0 to (maxLineSize-1-i) )  yield  new Point({
+
+      cardDimmensions.x*1.25*i + basePos.x + (cardDimmensions.x/2)*j
+
+    },{
+
+      basePos.y - cardDimmensions.x*0.5*j
+    })
+   
+
+    ret.sortWith((a,b)=> a.y < b.y)
 
   }
 

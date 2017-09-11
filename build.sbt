@@ -72,7 +72,7 @@ devBuild := {
     Files.copy(file.toPath,(toCopy / file.name).toPath,StandardCopyOption.REPLACE_EXISTING)
     val map = new File(file.toPath + ".map")
     if(map.exists)
-      FileUtils.copyFile(map,toCopy)
+      FileUtils.copyFileToDirectory(map,toCopy)
   })
 }
 
@@ -92,17 +92,13 @@ release := {
 
     t.map ((file)=>{
 
-
-      Files.copy(file.toPath,(toCopy / file.name).toPath,StandardCopyOption.REPLACE_EXISTING)
+      FileUtils.copyFileToDirectory(file,toCopy)
 
       val gz = new File(file.toPath + ".gz")
       val map = new File(file.toPath + ".map")
 
-      if(gz.exists)
-        FileUtils.copyFile(gz,toCopy)
-
-      if(map.exists)
-        FileUtils.copyFile(map,toCopy)
+      FileUtils.copyFileToDirectory(gz,toCopy)
+      FileUtils.copyFileToDirectory(map,toCopy)
 
     })
 
