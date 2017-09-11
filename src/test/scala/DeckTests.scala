@@ -1,28 +1,10 @@
-package solitair.tests
+package solitaire.tests
 
+import solitaire._
 import org.scalatest._
 
-sealed trait IDeck
-{
-  def Draw : IDeck
-  def IsEmpty : Boolean
-}
 
-class Deck private (rnd:(Int)=>Int,totalCards:Int) extends IDeck
-{
-  override def Draw(): IDeck = {
 
-    new Deck(rnd,totalCards-1)
-  }
-
-  override val IsEmpty = totalCards <=0
-}
-
-object Deck{
-
-  def apply(rnd: (Int) => Int): IDeck = new Deck(rnd,52)
-
-}
 
 class DeckTests extends FlatSpec with Matchers {
 
@@ -30,7 +12,7 @@ class DeckTests extends FlatSpec with Matchers {
 
   "A deck" should "have 52 cards" in {
 
-    var deck = Deck(rnd)
+    var deck = Deck(shuffler)
 
     var ammount = 0
 
@@ -40,12 +22,58 @@ class DeckTests extends FlatSpec with Matchers {
       ammount+=1
     }
 
+
     ammount should be (52)
   }
 
-  def rnd(until: Int): Int = {
+  it should "have one, and only one of each Card" in {
 
-    r.nextInt(until)
+
+    var deck = Deck(shuffler,Card.AllCards)
+
+
+    val cards = Iterator.iterate(deck)(_.Draw).takeWhile(!_.IsEmpty).map(_.Top).toSeq
+
+    val remain = Card.AllCards.filterNot(cards.contains(_))
+
+    cards.length should be (Card.AllCards.length)
+
+    remain.length should be (0)
+
+  }
+
+  it should "should call the shuffler only once" in {
+
+    var called = 0
+    var deck = Deck((cards)=>{
+      called+=1
+      println(called)
+      cards
+    },Card.AllCards)
+
+    val seq = Iterator.iterate(deck)(_.Draw).takeWhile(!_.IsEmpty).map(_.Top).toSeq
+
+    seq.length should be (52)
+    called should be (1)
+
+  }
+
+  it should "should call the shuffler on creations" in {
+
+    var called = false
+    var deck = Deck((cards)=>{
+      called =true
+      cards
+    },Card.AllCards)
+
+
+    called should be (true)
+
+  }
+
+  def shuffler(cards: Seq[Card]): Seq[Card] = {
+
+   cards
 
   }
 
